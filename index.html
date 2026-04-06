@@ -125,7 +125,7 @@
       margin-bottom: 30px;
     }
 
-    /* কার্ড স্টাইল - নরমাল, সাদা, ছায়া ছাড়া মিনিমাল, আইকন নেই */
+    /* কার্ড স্টাইল - নরমাল, সাদা, ছায়া ছাড়া মিনিমাল */
     .report-card {
       background: #ffffff;
       border-radius: 14px;
@@ -165,7 +165,7 @@
       opacity: 0.7;
     }
 
-    /* খালি কার্ডের জন্য বিশেষ স্টাইল (প্লেসহোল্ডার) - পরে লিংক এড হবে */
+    /* খালি কার্ডের জন্য বিশেষ স্টাইল */
     .empty-card {
       background: #fefce8;
       border: 1px dashed #cbd5a0;
@@ -174,11 +174,116 @@
       color: #7f8c5e;
       font-weight: 450;
     }
-    .empty-card .arrow-symbol {
-      color: #b9c28a;
+
+    /* মোডাল বক্স (লিংক দেখানোর জন্য) */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      visibility: hidden;
+      opacity: 0;
+      transition: visibility 0.2s, opacity 0.2s;
     }
 
-    /* লগআউট বাটন - ছোট, সাদাসিধে */
+    .modal-overlay.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-box {
+      background: white;
+      border-radius: 28px;
+      width: 90%;
+      max-width: 340px;
+      padding: 24px 20px 28px;
+      box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+      text-align: center;
+      animation: modalFadeIn 0.2s ease;
+    }
+
+    @keyframes modalFadeIn {
+      from {
+        transform: scale(0.96);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    .modal-box h4 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #0f3b3f;
+      margin-bottom: 12px;
+    }
+
+    .modal-link-container {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 14px 12px;
+      margin: 16px 0;
+      word-break: break-all;
+      font-size: 0.8rem;
+      color: #1e5f6b;
+      font-family: monospace;
+      text-align: left;
+      background: #f1f5f9;
+    }
+
+    .copy-btn {
+      background: #1e5f6b;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 60px;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: 0.2s;
+      margin-top: 4px;
+    }
+
+    .copy-btn:active {
+      transform: scale(0.96);
+      background: #0f4a54;
+    }
+
+    .copy-feedback {
+      font-size: 0.7rem;
+      margin-top: 12px;
+      color: #2b7e3a;
+      font-weight: 500;
+    }
+
+    .close-modal-btn {
+      background: transparent;
+      border: 1px solid #cbd5e1;
+      padding: 8px 18px;
+      border-radius: 40px;
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: #4b5563;
+      cursor: pointer;
+    }
+
+    .close-modal-btn:active {
+      background: #f1f5f9;
+    }
+
     .logout-wrapper {
       margin-top: 24px;
       text-align: center;
@@ -228,15 +333,27 @@
   </div>
 </div>
 
-<!-- মেইন ড্যাশবোর্ড (কোনো হেডার নেই, শুধু কার্ড) -->
+<!-- মেইন ড্যাশবোর্ড -->
 <div id="dashboard" class="dashboard">
-  <!-- কার্ডের গ্রিড: এখানে রেন্ডার হবে অনেকগুলো কার্ড (খালি + লিংকসহ) -->
   <div id="cardsContainer" class="cards-grid"></div>
 
   <div class="logout-wrapper">
     <button id="logoutBtn" class="logout-btn">লগআউট</button>
   </div>
-  <div class="footer-meta">🔒 Powered By Eunus EAS</div>
+  <div class="footer-meta">🔒 প্রতিদিন পিন পরিবর্তনযোগ্য | শুধুমাত্র অনুমোদিত</div>
+</div>
+
+<!-- মোডাল (EKYC লিংক দেখানোর জন্য) -->
+<div id="linkModal" class="modal-overlay">
+  <div class="modal-box">
+    <h4>📲 ই-কেওয়াইসি অ্যাপ ডাউনলোড</h4>
+    <div class="modal-link-container" id="modalLinkText">
+      https://oss.bkash.com/pub-ekyc-app/EKYC-PROD-release-beta.apk
+    </div>
+    <button id="copyLinkBtn" class="copy-btn">📋 কপি করুন</button>
+    <div id="copyFeedback" class="copy-feedback"></div>
+    <button id="closeModalBtn" class="close-modal-btn">বন্ধ করুন</button>
+  </div>
 </div>
 
 <script>
@@ -250,25 +367,33 @@
       return day + month + year;   // উদাহরণ: 060426
     }
 
-    // ======================= রিপোর্ট লিস্ট (খালি কার্ড সহ) =======================
-    // এখানে ইচ্ছামত কার্ড এড করা যাবে। আগের ৩টি লিংক রাখা আছে + অনেকগুলো খালি কার্ড (পরে লিংক দেয়া হবে)
+    // নির্দিষ্ট লিংক এবং কপি ফিচারের জন্য ডেডিকেটেড কার্ড ডাটা
+    const EKYC_LINK = "https://oss.bkash.com/pub-ekyc-app/EKYC-PROD-release-beta.apk";
+    
+    // ======================= রিপোর্ট লিস্ট (সব কার্ড) =======================
+    // আগের লিংক + খালি কার্ড + এখন "EKYC App Download Link" কার্ড যুক্ত করা হলো
     const reportsList = [
-      { name: "April-26 Agent Perf. Incentive Campaign DSO DSS DM Report", link: "https://docs.google.com/spreadsheets/d/1k-nS7ykk1OC25EJrEanMPoX7x5cZtRe_/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true", isEmpty: false },
-      { name: "Top 100 Agents Degrowth Monitor", link: "https://docs.google.com/spreadsheets/d/1eFL_mjGTuJg9oeun4x8sFmYAw3FtkFhp/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true", isEmpty: false },
-      { name: "সম্ভাব্য নতুন এজেন্ট ডকুমেন্ট সাবমিশন", link: "https://forms.gle/5xYHzVnxEbRyMaYQ6", isEmpty: false },
-      { name: "EKYC App Download Link", link: "https://docs.google.com/spreadsheets/d/1TEnQH51sVxZOkev7vVbcDEZAk5guJRsV/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true", isEmpty: false, placeholderNote: "লিংক যুক্ত হবে" },
-      { name: "এজেন্ট কে.পি.আই সারাংশ", link: "", isEmpty: true },
-      { name: "প্রমোশন ট্র্যাকার", link: "", isEmpty: true },
-      { name: "টার্গেট VS অর্জন", link: "", isEmpty: true },
-      { name: "জোনভিত্তিক পারফরম্যান্স", link: "", isEmpty: true },
-      { name: "নতুন এজেন্ট অনবোর্ডিং লিস্ট", link: "", isEmpty: true },
-      { name: "মাসিক রিভিউ (ড্রাফ্ট)", link: "", isEmpty: true },
-      { name: "কাস্টমার ফিডব্যাক সংক্ষেপ", link: "", isEmpty: true },
-      { name: "লিড কনভার্সন রিপোর্ট", link: "", isEmpty: true },
-      { name: "এটেন্ডেন্স সারাংশ", link: "", isEmpty: true }
+      { name: "Agent Performance Report", link: "https://docs.google.com/spreadsheets/d/1k-nS7ykk1OC25EJrEanMPoX7x5cZtRe_/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true", isEmpty: false, isEkyc: false },
+      { name: "Top 100 Agents", link: "https://docs.google.com/spreadsheets/d/1eFL_mjGTuJg9oeun4x8sFmYAw3FtkFhp/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true", isEmpty: false, isEkyc: false },
+      { name: "সম্ভাব্য নতুন এজেন্ট ডকুমেন্ট সাবমিশন", link: "https://forms.gle/5xYHzVnxEbRyMaYQ6", isEmpty: false, isEkyc: false },
+      
+      // ✅ নতুন EKYC কার্ড - ক্লিক করলে মোডাল খুলবে
+      { name: "EKYC App Download Link", link: null, isEmpty: false, isEkyc: true, modalLink: EKYC_LINK },
+      
+      // খালি কার্ড (পরে লিংক যোগ হবে)
+      { name: "দৈনিক সেলস রিপোর্ট", link: "", isEmpty: true, isEkyc: false },
+      { name: "এজেন্ট কে.পি.আই সারাংশ", link: "", isEmpty: true, isEkyc: false },
+      { name: "প্রমোশন ট্র্যাকার", link: "", isEmpty: true, isEkyc: false },
+      { name: "টার্গেট VS অর্জন", link: "", isEmpty: true, isEkyc: false },
+      { name: "জোনভিত্তিক পারফরম্যান্স", link: "", isEmpty: true, isEkyc: false },
+      { name: "নতুন এজেন্ট অনবোর্ডিং লিস্ট", link: "", isEmpty: true, isEkyc: false },
+      { name: "মাসিক রিভিউ (ড্রাফ্ট)", link: "", isEmpty: true, isEkyc: false },
+      { name: "কাস্টমার ফিডব্যাক সংক্ষেপ", link: "", isEmpty: true, isEkyc: false },
+      { name: "লিড কনভার্সন রিপোর্ট", link: "", isEmpty: true, isEkyc: false },
+      { name: "এটেন্ডেন্স সারাংশ", link: "", isEmpty: true, isEkyc: false }
     ];
 
-    // ডম এলিমেন্টস
+    // DOM elements
     const loginOverlay = document.getElementById('loginOverlay');
     const dashboardDiv = document.getElementById('dashboard');
     const pinInput = document.getElementById('pinInput');
@@ -276,39 +401,104 @@
     const errorDiv = document.getElementById('loginError');
     const cardsContainer = document.getElementById('cardsContainer');
     const logoutBtn = document.getElementById('logoutBtn');
+    
+    // মোডাল এলিমেন্ট
+    const modal = document.getElementById('linkModal');
+    const modalLinkText = document.getElementById('modalLinkText');
+    const copyBtn = document.getElementById('copyLinkBtn');
+    const copyFeedback = document.getElementById('copyFeedback');
+    const closeModalBtn = document.getElementById('closeModalBtn');
 
-    // কার্ড রেন্ডার ফাংশন - ছোট, টেক্সট বেসড, কোনো আইকন নেই, মোবাইল-ফ্রেন্ডলি
+    // মোডাল খোলার ফাংশন (শুধু ই-কেওয়াইসি কার্ডের জন্য)
+    function openEkycModal(linkUrl) {
+      if (modalLinkText) {
+        modalLinkText.innerText = linkUrl;
+      }
+      // আগের ফিডব্যাক রিসেট
+      if (copyFeedback) copyFeedback.innerText = '';
+      // মোডাল দেখানো
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      modal.classList.remove('active');
+      if (copyFeedback) copyFeedback.innerText = '';
+    }
+
+    // কপি ফাংশন (মডার্ন clipboard API)
+    async function copyLinkToClipboard() {
+      const linkToCopy = EKYC_LINK; // কনস্ট্যান্ট লিংক
+      try {
+        await navigator.clipboard.writeText(linkToCopy);
+        if (copyFeedback) {
+          copyFeedback.innerText = '✅ লিংক কপি হয়েছে! এখন যেকোনো জায়গায় পেস্ট করুন।';
+          setTimeout(() => {
+            if (copyFeedback) copyFeedback.innerText = '';
+          }, 2500);
+        }
+      } catch (err) {
+        console.error('কপি করতে ব্যর্থ:', err);
+        if (copyFeedback) {
+          copyFeedback.innerText = '❌ কপি করতে ব্যর্থ, ম্যানুয়ালি কপি করুন।';
+          setTimeout(() => {
+            if (copyFeedback) copyFeedback.innerText = '';
+          }, 2000);
+        }
+      }
+    }
+
+    // কার্ড রেন্ডার ফাংশন (ছোট, টেক্সট বেসড, মোবাইল-ফ্রেন্ডলি)
     function renderAllCards() {
       if (!cardsContainer) return;
       cardsContainer.innerHTML = '';
 
-      reportsList.forEach((item, idx) => {
+      reportsList.forEach((item) => {
         const card = document.createElement('div');
-        // ক্লাস: বেস কার্ড + যদি খালি হয় তবে empty-card স্টাইল
         card.className = 'report-card';
-        if (item.isEmpty || !item.link) {
+        
+        // খালি কার্ড স্টাইল (empty-card)
+        if (item.isEmpty) {
           card.classList.add('empty-card');
         }
-
-        // লিংক wrapper - যদি লিংক থাকে তাহলে <a> ট্যাগ, না থাকলে div (ক্লিকযোগ্য না)
-        const linkWrapper = document.createElement(item.link && !item.isEmpty ? 'a' : 'div');
-        if (item.link && !item.isEmpty) {
+        
+        // লিংক wrapper (সাধারণত a ট্যাগ, কিন্তু EKYC কার্ডের জন্য ভিন্ন)
+        let linkWrapper;
+        
+        // যদি EKYC কার্ড হয় (isEkyc true) তাহলে ক্লিক করলে মোডাল খুলবে
+        if (item.isEkyc) {
+          linkWrapper = document.createElement('div');
+          linkWrapper.className = 'report-link';
+          linkWrapper.style.cursor = 'pointer';
+          linkWrapper.addEventListener('click', (e) => {
+            e.preventDefault();
+            openEkycModal(EKYC_LINK);
+          });
+        } 
+        else if (item.link && !item.isEmpty) {
+          // সাধারণ লিংক কার্ড
+          linkWrapper = document.createElement('a');
           linkWrapper.href = item.link;
           linkWrapper.target = '_blank';
           linkWrapper.rel = 'noopener noreferrer';
           linkWrapper.className = 'report-link';
-        } else {
+        } 
+        else {
+          // খালি কার্ড (কোনো লিংক নেই, ক্লিক নিষ্ক্রিয়)
+          linkWrapper = document.createElement('div');
           linkWrapper.className = 'report-link';
-          // খালি কার্ডের জন্য কোনো রিডাইরেক্ট হবে না, স্টাইলিং একই রাখা
           linkWrapper.style.cursor = 'default';
+          linkWrapper.addEventListener('click', (e) => {
+            e.preventDefault();
+            // কিছুই না, শুধু খালি কার্ড
+          });
         }
-
+        
         // নামের অংশ
         const nameSpan = document.createElement('span');
         nameSpan.className = 'report-name';
         nameSpan.innerText = item.name;
         
-        // ডান পাশে তীর চিহ্ন (খালি কার্ডেও থাকবে, কিন্তু ক্লিকযোগ্য নয়)
+        // ডান পাশে তীর চিহ্ন
         const arrowSpan = document.createElement('span');
         arrowSpan.className = 'arrow-symbol';
         arrowSpan.innerText = '→';
@@ -316,48 +506,27 @@
         linkWrapper.appendChild(nameSpan);
         linkWrapper.appendChild(arrowSpan);
         card.appendChild(linkWrapper);
-        
-        // যদি খালি কার্ড হয় এবং লিংক না থাকে, তবুও সাদাসিধে UI, টুলটিপ বা মেসেজ লাগবে না, শুধু ভিজুয়াল আলাদা
-        if (item.isEmpty || !item.link) {
-          // খালি কার্ডগুলোর জন্য অ্যারো হালকা করে দেওয়া আছে, ক্লিক করলে কিছু হয় না
-          // ইউজার বুঝতে পারে পরবর্তীতে লিংক এড হবে
-          linkWrapper.addEventListener('click', (e) => {
-            if (!item.link || item.isEmpty) {
-              e.preventDefault();
-              // (অপশনাল) ছোট নোটিফিকেশন? আমরা চুপ থাকি, কারণ সিম্পল ইউআই চাওয়া হয়েছে
-              // তবে ইচ্ছে করলে হালকা টোস্ট দেওয়া যায়, কিন্তু না রাখলেই ভালো
-            }
-          });
-        }
-        
         cardsContainer.appendChild(card);
       });
     }
 
-    // লগইন সফল হলে ড্যাশবোর্ড দেখানো
-    function showDashboard() {
-      loginOverlay.style.display = 'none';
-      dashboardDiv.classList.remove('hidden');
-      dashboardDiv.classList.add('visible');
-      // কার্ড রেন্ডার
-      renderAllCards();
-    }
-
-    // লগইন চেক
+    // লগইন ফাংশন
     function attemptLogin() {
       const enteredPin = pinInput.value.trim();
       const correctPin = getTodayPIN();
       
       if (enteredPin === correctPin) {
-        // সাফল্য
         errorDiv.innerHTML = '';
-        showDashboard();
+        // লগইন সফল: ওভারলে লুকান, ড্যাশবোর্ড দেখান
+        loginOverlay.style.display = 'none';
+        dashboardDiv.classList.remove('hidden');
+        dashboardDiv.classList.add('visible');
+        renderAllCards();
         pinInput.value = '';
       } else {
         errorDiv.innerHTML = '<div class="error-msg">❌ ভুল পিন। আবার চেষ্টা করুন</div>';
         pinInput.value = '';
         pinInput.focus();
-        // ছোট এনিমেশন (শেক ইফেক্ট)
         const loginCard = document.querySelector('.login-card');
         if (loginCard) {
           loginCard.style.transform = 'translateX(3px)';
@@ -366,18 +535,16 @@
       }
     }
 
-    // লগআউট (পূর্ণ রিসেট)
+    // লগআউট ফাংশন
     function logoutAndReset() {
-      // ড্যাশবোর্ড লুকান
       dashboardDiv.classList.remove('visible');
       dashboardDiv.classList.add('hidden');
-      // লগইন ওভারলেই দেখান
       loginOverlay.style.display = 'flex';
       if (pinInput) pinInput.value = '';
       if (errorDiv) errorDiv.innerHTML = '';
-      // কার্ড কন্টেইনার খালি করা (যাতে পুনরায় ঢুকলে তাজা থাকে)
       if (cardsContainer) cardsContainer.innerHTML = '';
-      // ফোকাস
+      // মোডাল বন্ধ করে দেয়া
+      closeModal();
       setTimeout(() => pinInput && pinInput.focus(), 30);
     }
 
@@ -389,26 +556,29 @@
       });
     }
     if (logoutBtn) logoutBtn.addEventListener('click', logoutAndReset);
+    
+    // মোডাল বাটন ইভেন্ট
+    if (copyBtn) copyBtn.addEventListener('click', copyLinkToClipboard);
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+    // মোডালের বাইরে ক্লিক করলেও বন্ধ
+    if (modal) {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+    }
 
-    // পেজ ক্যাশে/ব্যাক বাটন রিলেটেড: অসঙ্গতি দেখা দিলে লগইন অবস্থায় রিসেট
-    window.addEventListener('pageshow', (event) => {
-      // যদি ড্যাশবোর্ড ভিজিবল কিন্তু ওভারলেও হাইডেন না থাকে (বিরল কেস)
+    // পেজ ক্যাশে রিলেটেড রিসেট
+    window.addEventListener('pageshow', () => {
       if (loginOverlay && dashboardDiv) {
         if (loginOverlay.style.display !== 'none' && dashboardDiv.classList.contains('visible')) {
           logoutAndReset();
         } else if (loginOverlay.style.display === 'none' && dashboardDiv.classList.contains('hidden')) {
-          // অদ্ভুত অবস্থা: ওভারলেও নেই, ড্যাশবোর্ডও নেই। রিলোডের মতো রিসেট
           logoutAndReset();
         }
       }
     });
-    
-    // অতিরিক্ত: লিংক যুক্ত করার পর খালি কার্ড গুলো ভবিষ্যতে আপডেট করার জন্য কনসোল হেল্পার নেই, 
-    // তবে ডেভেলপার চাইলে reportsList অ্যারের অবজেক্টের link সম্পাদনা করলেই হবে।
-    // এছাড়াও UI টেক্সট বেসড, ছোট কার্ড, কোনো হেডার নেই, মোবাইল-অপ্টিমাইজড
 
-    // ডিবাগের জন্য পিন ফরম্যাট জানান (নিরাপত্তায় রাখা)
-    console.log("✅ Mahir Enterprise | পিন ফরম্যাট: DDMMYY (আজকের তারিখ অনুযায়ী)");
+    console.log("✅ Mahir Enterprise | EKYC কার্ড যুক্ত হয়েছে (মোডাল + কপি বাটন)");
   })();
 </script>
 </body>
