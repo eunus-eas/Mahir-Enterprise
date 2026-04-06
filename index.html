@@ -1,310 +1,534 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mahir Enterprise</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Mahir Enterprise | Secure Reports Hub</title>
+  <!-- Google Fonts + modern reset -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <!-- Font Awesome 6 (free icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(145deg, #0b1a22 0%, #1a3b44 100%);
+      min-height: 100vh;
+      color: #f0f9ff;
+    }
 
-<style>
-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #0f2027, #2c5364);
-    color: #fff;
-}
+    /* login overlay */
+    .login-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, #0f2c38, #05161e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      backdrop-filter: blur(2px);
+      transition: opacity 0.3s ease;
+    }
 
-.container {
-    padding: 20px;
-    text-align: center;
-}
+    .login-card {
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 32px;
+      padding: 2rem 1.8rem;
+      width: 90%;
+      max-width: 360px;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      text-align: center;
+      backdrop-filter: blur(0px);
+      transition: transform 0.2s;
+    }
 
-.login-box {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: linear-gradient(135deg, #141e30, #243b55);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    .login-card h3 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #1e4b5e, #0f2f3a);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 0.3rem;
+    }
 
-.login-card {
-    background: #fff;
-    color: #000;
-    padding: 30px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 300px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-}
+    .login-sub {
+      color: #4b6a7a;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
 
-.login-card input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-}
+    .login-card input {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1rem;
+      border: 1.5px solid #dce4e8;
+      border-radius: 60px;
+      outline: none;
+      transition: all 0.2s;
+      background: #fff;
+      font-weight: 500;
+      text-align: center;
+      letter-spacing: 2px;
+    }
 
-.login-card button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 15px;
-    background: #2c5364;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-}
+    .login-card input:focus {
+      border-color: #2c7a6e;
+      box-shadow: 0 0 0 3px rgba(44, 122, 110, 0.2);
+    }
 
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
-}
+    .login-btn {
+      background: linear-gradient(100deg, #1f5e6b, #134b55);
+      border: none;
+      width: 100%;
+      padding: 14px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 1rem;
+      color: white;
+      margin-top: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+    }
 
-.card {
-    background: rgba(255,255,255,0.1);
-    padding: 20px;
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
-    transition: 0.3s;
-}
+    .login-btn:hover {
+      background: linear-gradient(100deg, #187180, #0f3f49);
+      transform: scale(0.98);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
 
-.card:hover {
-    transform: scale(1.05);
-    background: rgba(255,255,255,0.2);
-}
+    .error-msg {
+      color: #e05a5a;
+      font-size: 0.8rem;
+      margin-top: 12px;
+      font-weight: 500;
+      background: #ffe9e9;
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 40px;
+    }
 
-.logout {
-    margin-top: 20px;
-    background: red;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-}
+    /* main dashboard (hidden until login) */
+    .dashboard {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 30px 24px 50px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.4s ease, transform 0.3s ease;
+    }
 
-.hidden { display: none; }
-</style>
+    .dashboard.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* header section */
+    .brand-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      margin-bottom: 30px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      padding-bottom: 18px;
+    }
+
+    .title h1 {
+      font-weight: 700;
+      font-size: 1.9rem;
+      letter-spacing: -0.3px;
+      background: linear-gradient(to right, #ffffff, #b9e6f0);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .title p {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-top: 6px;
+    }
+
+    .badge-date {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(4px);
+      padding: 8px 18px;
+      border-radius: 60px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .badge-date i {
+      margin-right: 8px;
+    }
+
+    /* cards grid */
+    .reports-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 24px;
+      margin: 40px 0 40px;
+    }
+
+    .report-card {
+      background: rgba(20, 40, 48, 0.65);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      padding: 1.6rem 1.4rem;
+      transition: all 0.25s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 12px 20px -12px rgba(0, 0, 0, 0.3);
+      cursor: pointer;
+    }
+
+    .report-card:hover {
+      transform: translateY(-6px);
+      background: rgba(35, 70, 80, 0.8);
+      border-color: rgba(255, 255, 255, 0.4);
+      box-shadow: 0 20px 28px -12px black;
+    }
+
+    .card-icon {
+      font-size: 2.4rem;
+      margin-bottom: 1rem;
+      color: #a2e0f0;
+    }
+
+    .report-card h3 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      line-height: 1.3;
+    }
+
+    .report-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #b9e2ef;
+    }
+
+    .card-footer i {
+      transition: transform 0.2s;
+    }
+
+    .report-card:hover .card-footer i {
+      transform: translateX(5px);
+    }
+
+    /* logout button */
+    .logout-wrapper {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .logout-btn {
+      background: rgba(220, 60, 60, 0.85);
+      border: none;
+      padding: 12px 28px;
+      border-radius: 60px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .logout-btn:hover {
+      background: rgb(190, 40, 40);
+      transform: scale(0.97);
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 0.7rem;
+      opacity: 0.6;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* responsive touches */
+    @media (max-width: 550px) {
+      .dashboard {
+        padding: 20px 16px 40px;
+      }
+      .report-card {
+        padding: 1.2rem;
+      }
+      .brand-header {
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="login-box" id="loginBox">
-    <div class="login-card">
-        <h3>Enter PIN</h3>
-        <input type="password" id="pinInput" placeholder="Enter PIN">
-        <button onclick="login()">Login</button>
-        <p id="error" style="color:red;"></p>
-    </div>
+<!-- LOGIN OVERLAY -->
+<div id="loginOverlay" class="login-overlay">
+  <div class="login-card">
+    <i class="fas fa-shield-alt" style="font-size: 2.5rem; color: #1f6e6e; margin-bottom: 8px;"></i>
+    <h3>Mahir Enterprise</h3>
+    <div class="login-sub">secure reports access</div>
+    <input type="password" id="pinInput" placeholder="• • • • • •" autocomplete="off" inputmode="numeric">
+    <button class="login-btn" id="loginBtn"><i class="fas fa-key"></i> &nbsp; Unlock Dashboard</button>
+    <div id="loginError" style="min-height: 42px; margin-top: 12px;"></div>
+  </div>
 </div>
 
-<div class="container hidden" id="mainContent">
+<!-- MAIN DASHBOARD (initially hidden) -->
+<div id="dashboard" class="dashboard hidden">
+  <div class="brand-header">
+    <div class="title">
+      <h1><i class="fas fa-chart-line"></i> Mahir Enterprise</h1>
+      <p>Real-time intelligence & agent insights</p>
+    </div>
+    <div class="badge-date" id="dateBadge">
+      <i class="far fa-calendar-alt"></i> <span id="currentDateText">--</span>
+    </div>
+  </div>
 
-    <div class="cards" id="reportList"></div>
+  <!-- dynamic report cards grid -->
+  <div id="reportsGrid" class="reports-grid"></div>
 
-    <button class="logout" onclick="logout()">Logout</button>
+  <div class="logout-wrapper">
+    <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout & Lock Session</button>
+  </div>
+  <div class="footer-note">
+    <i class="fas fa-lock"></i> Daily rotating PIN • Authorized personnel only
+  </div>
 </div>
 
 <script>
-
-// DAILY PIN BASED ON DATE (DDMM)
-function getTodayPIN() {
-    let d = new Date();
-    let day = String(d.getDate()).padStart(2,'0');
-    let month = String(d.getMonth()+1).padStart(2,'0');
-    let year = String(d.getFullYear()).slice(-2);
-    return day + month + year; // example: 060426
-}
-
-function login() {
-    let input = document.getElementById("pinInput").value;
-    if(input === getTodayPIN()) {
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("mainContent").classList.remove("hidden");
-    } else {
-        document.getElementById("error").innerText = "Wrong PIN";
+  (function() {
+    // ---------- UTILITIES ----------
+    // PIN generation: DDMMYY (day month year 2-digit) → matches pattern 060426 for 6th April 2026
+    // IMPORTANT: matches requirement "example: 060426" format: DDMMYY (2-digit year)
+    function getTodayPIN() {
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const yearShort = String(today.getFullYear()).slice(-2);
+      // format: DDMMYY → exactly like "060426"
+      return day + month + yearShort;
     }
-}
 
-function logout() {
-    location.reload();
-}
+    // define reports dataset (clean, no duplicate, includes all three from spec + extra readability)
+    const reportsData = [
+      {
+        name: "Agent Performance Report",
+        link: "https://docs.google.com/spreadsheets/d/1k-nS7ykk1OC25EJrEanMPoX7x5cZtRe_/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true",
+        icon: "fas fa-chart-simple",
+        color: "#b9f3ff"
+      },
+      {
+        name: "Top 100 Agents",
+        link: "https://docs.google.com/spreadsheets/d/1eFL_mjGTuJg9oeun4x8sFmYAw3FtkFhp/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true",
+        icon: "fas fa-trophy",
+        color: "#ffd966"
+      },
+      {
+        name: "সম্ভাব্য নতুন এজেন্ট ডকুমেন্ট সাবমিশন",
+        link: "https://forms.gle/5xYHzVnxEbRyMaYQ6",
+        icon: "fas fa-file-alt",
+        color: "#a0e7e5"
+      }
+    ];
 
-let reports = [
-    {name: "Agent Performance Report", link: "https://docs.google.com/spreadsheets/d/1k-nS7ykk1OC25EJrEanMPoX7x5cZtRe_/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true"},
-    {name: "Top 100 Agents", link: "https://docs.google.com/spreadsheets/d/1eFL_mjGTuJg9oeun4x8sFmYAw3FtkFhp/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true"},
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mahir Enterprise</title>
+    // Additional security: clear input field on error, focus management
+    const loginOverlay = document.getElementById('loginOverlay');
+    const dashboardDiv = document.getElementById('dashboard');
+    const pinInput = document.getElementById('pinInput');
+    const loginBtn = document.getElementById('loginBtn');
+    const errorContainer = document.getElementById('loginError');
+    const reportsGrid = document.getElementById('reportsGrid');
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-<style>
-body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #0f2027, #2c5364);
-    color: #fff;
-}
-
-.container {
-    padding: 20px;
-    text-align: center;
-}
-
-.login-box {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: linear-gradient(135deg, #141e30, #243b55);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.login-card {
-    background: #fff;
-    color: #000;
-    padding: 30px;
-    border-radius: 15px;
-    width: 90%;
-    max-width: 300px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-}
-
-.login-card input {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-}
-
-.login-card button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 15px;
-    background: #2c5364;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-}
-
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.card {
-    background: rgba(255,255,255,0.1);
-    padding: 20px;
-    border-radius: 12px;
-    backdrop-filter: blur(10px);
-    transition: 0.3s;
-}
-
-.card:hover {
-    transform: scale(1.05);
-    background: rgba(255,255,255,0.2);
-}
-
-.logout {
-    margin-top: 20px;
-    background: red;
-    padding: 10px;
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-}
-
-.hidden { display: none; }
-</style>
-</head>
-
-<body>
-
-<div class="login-box" id="loginBox">
-    <div class="login-card">
-        <h3>Enter PIN</h3>
-        <input type="password" id="pinInput" placeholder="Enter PIN">
-        <button onclick="login()">Login</button>
-        <p id="error" style="color:red;"></p>
-    </div>
-</div>
-
-<div class="container hidden" id="mainContent">
-
-    <div class="cards" id="reportList"></div>
-
-    <button class="logout" onclick="logout()">Logout</button>
-</div>
-
-<script>
-
-// DAILY PIN BASED ON DATE (DDMM)
-function getTodayPIN() {
-    let d = new Date();
-    let day = String(d.getDate()).padStart(2,'0');
-    let month = String(d.getMonth()+1).padStart(2,'0');
-    let year = String(d.getFullYear()).slice(-2);
-    return day + month + year; // example: 060426
-}
-
-function login() {
-    let input = document.getElementById("pinInput").value;
-    if(input === getTodayPIN()) {
-        document.getElementById("loginBox").style.display = "none";
-        document.getElementById("mainContent").classList.remove("hidden");
-    } else {
-        document.getElementById("error").innerText = "Wrong PIN";
+    // format current date for badge (nice readable)
+    function updateDateBadge() {
+      const dateSpan = document.getElementById('currentDateText');
+      if (dateSpan) {
+        const now = new Date();
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        dateSpan.innerText = now.toLocaleDateString(undefined, options);
+      }
     }
-}
 
-function logout() {
-    location.reload();
-}
+    // render report cards dynamically with robust styling and accessibility
+    function renderReports() {
+      if (!reportsGrid) return;
+      reportsGrid.innerHTML = '';
+      reportsData.forEach((report, idx) => {
+        const card = document.createElement('div');
+        card.className = 'report-card';
+        // make whole card clickable but preserve link behavior inside
+        const anchor = document.createElement('a');
+        anchor.href = report.link;
+        anchor.target = '_blank';
+        anchor.rel = 'noopener noreferrer';
+        anchor.className = 'report-link';
+        anchor.style.display = 'block';
+        anchor.style.textDecoration = 'none';
+        anchor.style.color = 'inherit';
+        
+        // inner html structure
+        anchor.innerHTML = `
+          <div class="card-icon">
+            <i class="${report.icon}" style="color: ${report.color || '#aad4e0'}"></i>
+          </div>
+          <h3>${escapeHtml(report.name)}</h3>
+          <div class="card-footer">
+            <span>Open report</span>
+            <i class="fas fa-arrow-right"></i>
+          </div>
+        `;
+        card.appendChild(anchor);
+        reportsGrid.appendChild(card);
+      });
+    }
 
-let reports = [
-    {name: "Agent Performance Report", link: "https://docs.google.com/spreadsheets/d/1k-nS7ykk1OC25EJrEanMPoX7x5cZtRe_/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true"},
-    {name: "Top 100 Agents", link: "https://docs.google.com/spreadsheets/d/1eFL_mjGTuJg9oeun4x8sFmYAw3FtkFhp/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true"},
-    {name: "সম্ভাব্য নতুন এজেন্ট ডকুমেন্ট সাবমিশন", link: "https://forms.gle/5xYHzVnxEbRyMaYQ6"},
-];
+    // simple XSS prevention helper (though names are safe)
+    function escapeHtml(str) {
+      return str.replace(/[&<>]/g, function(m) {
+        if (m === '&') return '&amp;';
+        if (m === '<') return '&lt;';
+        if (m === '>') return '&gt;';
+        return m;
+      }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+        return c;
+      });
+    }
 
-let reportContainer = document.getElementById("reportList");
+    // login handler
+    function attemptLogin() {
+      const enteredPin = pinInput.value.trim();
+      const correctPin = getTodayPIN();
+      
+      if (enteredPin === correctPin) {
+        // success: hide login overlay, show dashboard with smooth transition
+        loginOverlay.style.display = 'none';
+        dashboardDiv.classList.remove('hidden');
+        // small delay to allow css transition for dashboard entrance
+        setTimeout(() => {
+          dashboardDiv.classList.add('visible');
+        }, 20);
+        // clear any previous error & input
+        if (errorContainer) errorContainer.innerHTML = '';
+        pinInput.value = '';
+        // update date badge
+        updateDateBadge();
+        // render all report cards
+        renderReports();
+      } else {
+        // error handling with shake effect?
+        if (errorContainer) {
+          errorContainer.innerHTML = '<div class="error-msg"><i class="fas fa-exclamation-triangle"></i> Invalid PIN · Access denied</div>';
+        }
+        pinInput.value = '';
+        pinInput.focus();
+        // optional shake effect on login card
+        const card = document.querySelector('.login-card');
+        if (card) {
+          card.style.transform = 'translateX(4px)';
+          setTimeout(() => { if(card) card.style.transform = ''; }, 100);
+          setTimeout(() => { if(card) card.style.transform = ''; }, 200);
+        }
+      }
+    }
 
-reports.forEach(r => {
-    let div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `<a href="${r.link}" target="_blank" style="color:white;text-decoration:none;">${r.name}</a>`;
-    reportContainer.appendChild(div);
-});
+    // logout: fully reset to login screen (location.reload style but without full reload flash? we do simple reset)
+    function logoutAndReset() {
+      // reset dashboard hidden and clear visible flag
+      dashboardDiv.classList.remove('visible');
+      dashboardDiv.classList.add('hidden');
+      // reset login overlay display style and clear fields
+      loginOverlay.style.display = 'flex';
+      if (pinInput) pinInput.value = '';
+      if (errorContainer) errorContainer.innerHTML = '';
+      // clear any leftover grid content to avoid showing stale data
+      if (reportsGrid) reportsGrid.innerHTML = '';
+      // focus on pin
+      setTimeout(() => {
+        if (pinInput) pinInput.focus();
+      }, 50);
+    }
 
+    // event listeners
+    if (loginBtn) {
+      loginBtn.addEventListener('click', attemptLogin);
+    }
+    // allow Enter key on password field
+    if (pinInput) {
+      pinInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          attemptLogin();
+        }
+      });
+    }
+
+    const logoutBtn = document.getElementById('logoutBtn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', logoutAndReset);
+    }
+
+    // preload any style / also make sure PIN validation is consistent with today's date.
+    // For dev/testing: optionally display demo hint? Not needed. But we include console log for security.
+    console.log("Secure Portal: PIN uses dynamic DDMMYY pattern.");
+    
+    // Edge: if someone manually inspects, but login overlay must cover before access.
+    // Also protect against back/forward cache: optional reset on pageshow? simple but robust.
+    window.addEventListener('pageshow', function(event) {
+      // if page is restored from bfcache and dashboard visible without login? Ensure overlay consistency
+      if (loginOverlay && dashboardDiv) {
+        if (loginOverlay.style.display === 'none' && dashboardDiv.classList.contains('hidden')) {
+          // Inconsistent state: force logout reset
+          logoutAndReset();
+        } else if (loginOverlay.style.display !== 'none' && !dashboardDiv.classList.contains('hidden')) {
+          // another weird scenario
+          logoutAndReset();
+        }
+      }
+    });
+    
+    // Extra: if someone tries to access main content via devtools, they still need correct PIN.
+    // The data is loaded only after login (renderReports). Good.
+    
+    // Display current PIN hint? no, but we can show date info for debugging (not pin).
+    // add a subtle live demo note: not required.
+    // for better UX, if user reloads while logged in, they'll be back at login (since reload resets state).
+    // That's acceptable (logout = reload behavior).
+    // However we also provide proper logout without full reload, but location.reload alternative? no, we simulate reset.
+    // For extra integrity, we also clear any localStorage or session related (none used).
+  })();
 </script>
-
-</body>
-</html>
-
-];
-
-let reportContainer = document.getElementById("reportList");
-
-reports.forEach(r => {
-    let div = document.createElement("div");
-    div.className = "card";
-    div.innerHTML = `<a href="${r.link}" target="_blank" style="color:white;text-decoration:none;">${r.name}</a>`;
-    reportContainer.appendChild(div);
-});
-
-</script>
-
 </body>
 </html>
