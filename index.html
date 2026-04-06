@@ -1,13 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Mahir Enterprise | Secure Reports Hub</title>
-  <!-- Google Fonts + modern reset -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-  <!-- Font Awesome 6 (free icons) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>Mahir Enterprise | রিপোর্ট ড্যাশবোর্ড</title>
   <style>
     * {
       margin: 0;
@@ -16,518 +12,405 @@
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(145deg, #0b1a22 0%, #1a3b44 100%);
+      font-family: system-ui, -apple-system, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      background: #f1f5f9;
       min-height: 100vh;
-      color: #f0f9ff;
+      padding: 0;
+      margin: 0;
     }
 
-    /* login overlay */
+    /* লগইন ওভারলে - মোবাইল ফ্রেন্ডলি */
     .login-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at 20% 30%, #0f2c38, #05161e);
+      background: #ffffff;
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 1000;
-      backdrop-filter: blur(2px);
-      transition: opacity 0.3s ease;
+      padding: 20px;
     }
 
     .login-card {
-      background: rgba(255, 255, 255, 0.96);
-      border-radius: 32px;
-      padding: 2rem 1.8rem;
-      width: 90%;
-      max-width: 360px;
-      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      background: white;
+      border-radius: 24px;
+      padding: 32px 24px;
+      width: 100%;
+      max-width: 300px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
       text-align: center;
-      backdrop-filter: blur(0px);
-      transition: transform 0.2s;
+      border: 1px solid #e2e8f0;
     }
 
     .login-card h3 {
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       font-weight: 600;
-      background: linear-gradient(135deg, #1e4b5e, #0f2f3a);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      margin-bottom: 0.3rem;
+      color: #0f3b3f;
+      margin-bottom: 6px;
     }
 
     .login-sub {
-      color: #4b6a7a;
-      font-size: 0.85rem;
-      margin-bottom: 1.5rem;
-      font-weight: 500;
+      color: #5b6e8c;
+      font-size: 0.75rem;
+      margin-bottom: 24px;
     }
 
     .login-card input {
       width: 100%;
-      padding: 14px 16px;
+      padding: 14px 12px;
       font-size: 1rem;
-      border: 1.5px solid #dce4e8;
-      border-radius: 60px;
+      border: 1px solid #cbd5e1;
+      border-radius: 44px;
       outline: none;
-      transition: all 0.2s;
       background: #fff;
-      font-weight: 500;
       text-align: center;
       letter-spacing: 2px;
+      font-weight: 500;
     }
 
     .login-card input:focus {
       border-color: #2c7a6e;
-      box-shadow: 0 0 0 3px rgba(44, 122, 110, 0.2);
+      box-shadow: 0 0 0 3px rgba(44,122,110,0.1);
     }
 
     .login-btn {
-      background: linear-gradient(100deg, #1f5e6b, #134b55);
+      background: #1e5f6b;
       border: none;
       width: 100%;
-      padding: 14px;
-      border-radius: 60px;
+      padding: 12px;
+      border-radius: 44px;
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: white;
       margin-top: 20px;
       cursor: pointer;
-      transition: all 0.2s;
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.1);
+      transition: 0.2s;
     }
 
-    .login-btn:hover {
-      background: linear-gradient(100deg, #187180, #0f3f49);
-      transform: scale(0.98);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    .login-btn:active {
+      transform: scale(0.97);
+      background: #0f4a54;
     }
 
     .error-msg {
-      color: #e05a5a;
-      font-size: 0.8rem;
+      color: #dc2626;
+      font-size: 0.7rem;
       margin-top: 12px;
-      font-weight: 500;
-      background: #ffe9e9;
+      background: #fee2e2;
       display: inline-block;
-      padding: 5px 12px;
-      border-radius: 40px;
+      padding: 4px 12px;
+      border-radius: 30px;
     }
 
-    /* main dashboard (hidden until login) */
+    /* মেইন ড্যাশবোর্ড - কোন হেডার ছাড়া, শুধু কার্ড গ্রিড */
     .dashboard {
-      max-width: 1300px;
+      max-width: 600px;
       margin: 0 auto;
-      padding: 30px 24px 50px;
-      opacity: 0;
-      transform: translateY(12px);
-      transition: opacity 0.4s ease, transform 0.3s ease;
+      padding: 20px 16px 40px;
+      display: none;
     }
 
     .dashboard.visible {
-      opacity: 1;
-      transform: translateY(0);
+      display: block;
     }
 
-    /* header section */
-    .brand-header {
+    /* কার্ড গ্রিড - ছোট, টেক্সট বেসড, মোবাইল ইউআই */
+    .cards-grid {
       display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      flex-wrap: wrap;
+      flex-direction: column;
+      gap: 12px;
       margin-bottom: 30px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-      padding-bottom: 18px;
     }
 
-    .title h1 {
-      font-weight: 700;
-      font-size: 1.9rem;
-      letter-spacing: -0.3px;
-      background: linear-gradient(to right, #ffffff, #b9e6f0);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-
-    .title p {
-      font-size: 0.85rem;
-      opacity: 0.8;
-      margin-top: 6px;
-    }
-
-    .badge-date {
-      background: rgba(255, 255, 255, 0.12);
-      backdrop-filter: blur(4px);
-      padding: 8px 18px;
-      border-radius: 60px;
-      font-size: 0.85rem;
-      font-weight: 500;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-
-    .badge-date i {
-      margin-right: 8px;
-    }
-
-    /* cards grid */
-    .reports-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
-      gap: 24px;
-      margin: 40px 0 40px;
-    }
-
+    /* কার্ড স্টাইল - নরমাল, সাদা, ছায়া ছাড়া মিনিমাল, আইকন নেই */
     .report-card {
-      background: rgba(20, 40, 48, 0.65);
-      backdrop-filter: blur(12px);
-      border-radius: 28px;
-      padding: 1.6rem 1.4rem;
-      transition: all 0.25s ease;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 12px 20px -12px rgba(0, 0, 0, 0.3);
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 14px 18px;
+      transition: all 0.15s ease;
+      border: 1px solid #e2edf2;
       cursor: pointer;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.02);
     }
 
-    .report-card:hover {
-      transform: translateY(-6px);
-      background: rgba(35, 70, 80, 0.8);
-      border-color: rgba(255, 255, 255, 0.4);
-      box-shadow: 0 20px 28px -12px black;
-    }
-
-    .card-icon {
-      font-size: 2.4rem;
-      margin-bottom: 1rem;
-      color: #a2e0f0;
-    }
-
-    .report-card h3 {
-      font-size: 1.35rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-      line-height: 1.3;
+    .report-card:active {
+      background: #f8fafc;
+      transform: scale(0.99);
     }
 
     .report-link {
       text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-
-    .card-footer {
+      color: #1e293b;
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 8px;
-      margin-top: 20px;
-      font-size: 0.8rem;
       font-weight: 500;
-      color: #b9e2ef;
+      font-size: 0.95rem;
+      line-height: 1.4;
     }
 
-    .card-footer i {
-      transition: transform 0.2s;
+    .report-name {
+      flex: 1;
+      word-break: break-word;
+      padding-right: 12px;
     }
 
-    .report-card:hover .card-footer i {
-      transform: translateX(5px);
+    .arrow-symbol {
+      color: #7c8ea0;
+      font-size: 1.1rem;
+      font-weight: 400;
+      opacity: 0.7;
     }
 
-    /* logout button */
+    /* খালি কার্ডের জন্য বিশেষ স্টাইল (প্লেসহোল্ডার) - পরে লিংক এড হবে */
+    .empty-card {
+      background: #fefce8;
+      border: 1px dashed #cbd5a0;
+    }
+    .empty-card .report-name {
+      color: #7f8c5e;
+      font-weight: 450;
+    }
+    .empty-card .arrow-symbol {
+      color: #b9c28a;
+    }
+
+    /* লগআউট বাটন - ছোট, সাদাসিধে */
     .logout-wrapper {
+      margin-top: 24px;
       text-align: center;
-      margin-top: 20px;
     }
 
     .logout-btn {
-      background: rgba(220, 60, 60, 0.85);
-      border: none;
-      padding: 12px 28px;
+      background: transparent;
+      border: 1px solid #cbd5e1;
+      padding: 10px 20px;
       border-radius: 60px;
-      font-weight: 600;
-      font-size: 0.95rem;
-      color: white;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #4b5563;
+      cursor: pointer;
+      transition: 0.2s;
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      cursor: pointer;
-      transition: all 0.2s;
-      backdrop-filter: blur(4px);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      gap: 8px;
     }
 
-    .logout-btn:hover {
-      background: rgb(190, 40, 40);
-      transform: scale(0.97);
+    .logout-btn:active {
+      background: #f1f5f9;
     }
 
-    .footer-note {
+    .footer-meta {
       text-align: center;
+      font-size: 0.6rem;
+      color: #8ba0b5;
       margin-top: 32px;
-      font-size: 0.7rem;
-      opacity: 0.6;
     }
 
     .hidden {
-      display: none !important;
-    }
-
-    /* responsive touches */
-    @media (max-width: 550px) {
-      .dashboard {
-        padding: 20px 16px 40px;
-      }
-      .report-card {
-        padding: 1.2rem;
-      }
-      .brand-header {
-        flex-direction: column;
-        gap: 12px;
-      }
+      display: none;
     }
   </style>
 </head>
 <body>
 
-<!-- LOGIN OVERLAY -->
+<!-- লগইন স্ক্রিন -->
 <div id="loginOverlay" class="login-overlay">
   <div class="login-card">
-    <i class="fas fa-shield-alt" style="font-size: 2.5rem; color: #1f6e6e; margin-bottom: 8px;"></i>
-    <h3>Mahir Enterprise</h3>
-    <div class="login-sub">secure reports access</div>
-    <input type="password" id="pinInput" placeholder="• • • • • •" autocomplete="off" inputmode="numeric">
-    <button class="login-btn" id="loginBtn"><i class="fas fa-key"></i> &nbsp; Unlock Dashboard</button>
-    <div id="loginError" style="min-height: 42px; margin-top: 12px;"></div>
+    <h3>মাহির এন্টারপ্রাইজ</h3>
+    <div class="login-sub">পিন দিন • নিরাপদ প্রবেশ</div>
+    <input type="password" id="pinInput" placeholder="পিন নম্বর" inputmode="numeric" autocomplete="off">
+    <button class="login-btn" id="loginBtn">ড্যাশবোর্ড খুলুন</button>
+    <div id="loginError" style="min-height: 44px;"></div>
   </div>
 </div>
 
-<!-- MAIN DASHBOARD (initially hidden) -->
-<div id="dashboard" class="dashboard hidden">
-  <div class="brand-header">
-    <div class="title">
-      <h1><i class="fas fa-chart-line"></i> Mahir Enterprise</h1>
-      <p>Real-time intelligence & agent insights</p>
-    </div>
-    <div class="badge-date" id="dateBadge">
-      <i class="far fa-calendar-alt"></i> <span id="currentDateText">--</span>
-    </div>
-  </div>
-
-  <!-- dynamic report cards grid -->
-  <div id="reportsGrid" class="reports-grid"></div>
+<!-- মেইন ড্যাশবোর্ড (কোনো হেডার নেই, শুধু কার্ড) -->
+<div id="dashboard" class="dashboard">
+  <!-- কার্ডের গ্রিড: এখানে রেন্ডার হবে অনেকগুলো কার্ড (খালি + লিংকসহ) -->
+  <div id="cardsContainer" class="cards-grid"></div>
 
   <div class="logout-wrapper">
-    <button id="logoutBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout & Lock Session</button>
+    <button id="logoutBtn" class="logout-btn">লগআউট</button>
   </div>
-  <div class="footer-note">
-    <i class="fas fa-lock"></i> Daily rotating PIN • Authorized personnel only
-  </div>
+  <div class="footer-meta">🔒 Powered By Eunus EAS</div>
 </div>
 
 <script>
   (function() {
-    // ---------- UTILITIES ----------
-    // PIN generation: DDMMYY (day month year 2-digit) → matches pattern 060426 for 6th April 2026
-    // IMPORTANT: matches requirement "example: 060426" format: DDMMYY (2-digit year)
+    // ======================= DAILY PIN (DDMMYY) =======================
     function getTodayPIN() {
-      const today = new Date();
-      const day = String(today.getDate()).padStart(2, '0');
-      const month = String(today.getMonth() + 1).padStart(2, '0');
-      const yearShort = String(today.getFullYear()).slice(-2);
-      // format: DDMMYY → exactly like "060426"
-      return day + month + yearShort;
+      const d = new Date();
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = String(d.getFullYear()).slice(-2);
+      return day + month + year;   // উদাহরণ: 060426
     }
 
-    // define reports dataset (clean, no duplicate, includes all three from spec + extra readability)
-    const reportsData = [
-      {
-        name: "Agent Performance Report",
-        link: "https://docs.google.com/spreadsheets/d/1k-nS7ykk1OC25EJrEanMPoX7x5cZtRe_/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true",
-        icon: "fas fa-chart-simple",
-        color: "#b9f3ff"
-      },
-      {
-        name: "Top 100 Agents",
-        link: "https://docs.google.com/spreadsheets/d/1eFL_mjGTuJg9oeun4x8sFmYAw3FtkFhp/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true",
-        icon: "fas fa-trophy",
-        color: "#ffd966"
-      },
-      {
-        name: "সম্ভাব্য নতুন এজেন্ট ডকুমেন্ট সাবমিশন",
-        link: "https://forms.gle/5xYHzVnxEbRyMaYQ6",
-        icon: "fas fa-file-alt",
-        color: "#a0e7e5"
-      }
+    // ======================= রিপোর্ট লিস্ট (খালি কার্ড সহ) =======================
+    // এখানে ইচ্ছামত কার্ড এড করা যাবে। আগের ৩টি লিংক রাখা আছে + অনেকগুলো খালি কার্ড (পরে লিংক দেয়া হবে)
+    const reportsList = [
+      { name: "Agent Performance Report", link: "https://docs.google.com/spreadsheets/d/1k-nS7ykk1OC25EJrEanMPoX7x5cZtRe_/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true", isEmpty: false },
+      { name: "Top 100 Agents", link: "https://docs.google.com/spreadsheets/d/1eFL_mjGTuJg9oeun4x8sFmYAw3FtkFhp/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true", isEmpty: false },
+      { name: "সম্ভাব্য নতুন এজেন্ট ডকুমেন্ট সাবমিশন", link: "https://forms.gle/5xYHzVnxEbRyMaYQ6", isEmpty: false },
+	  { name: "EKYC App Download Link", link: "https://oss.bkash.com/pub-ekyc-app/EKYC-PROD-release-beta.apk", isEmpty: false 
+      // ----- খালি কার্ড (পরে লিংক যোগ করা হবে) -----
+      { name: "দৈনিক সেলস রিপোর্ট", link: "", isEmpty: true, placeholderNote: "লিংক যুক্ত হবে" },
+      { name: "এজেন্ট কে.পি.আই সারাংশ", link: "", isEmpty: true },
+      { name: "প্রমোশন ট্র্যাকার", link: "", isEmpty: true },
+      { name: "টার্গেট VS অর্জন", link: "", isEmpty: true },
+      { name: "জোনভিত্তিক পারফরম্যান্স", link: "", isEmpty: true },
+      { name: "নতুন এজেন্ট অনবোর্ডিং লিস্ট", link: "", isEmpty: true },
+      { name: "মাসিক রিভিউ (ড্রাফ্ট)", link: "", isEmpty: true },
+      { name: "কাস্টমার ফিডব্যাক সংক্ষেপ", link: "", isEmpty: true },
+      { name: "লিড কনভার্সন রিপোর্ট", link: "", isEmpty: true },
+      { name: "এটেন্ডেন্স সারাংশ", link: "", isEmpty: true }
     ];
 
-    // Additional security: clear input field on error, focus management
+    // ডম এলিমেন্টস
     const loginOverlay = document.getElementById('loginOverlay');
     const dashboardDiv = document.getElementById('dashboard');
     const pinInput = document.getElementById('pinInput');
     const loginBtn = document.getElementById('loginBtn');
-    const errorContainer = document.getElementById('loginError');
-    const reportsGrid = document.getElementById('reportsGrid');
+    const errorDiv = document.getElementById('loginError');
+    const cardsContainer = document.getElementById('cardsContainer');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-    // format current date for badge (nice readable)
-    function updateDateBadge() {
-      const dateSpan = document.getElementById('currentDateText');
-      if (dateSpan) {
-        const now = new Date();
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        dateSpan.innerText = now.toLocaleDateString(undefined, options);
-      }
-    }
+    // কার্ড রেন্ডার ফাংশন - ছোট, টেক্সট বেসড, কোনো আইকন নেই, মোবাইল-ফ্রেন্ডলি
+    function renderAllCards() {
+      if (!cardsContainer) return;
+      cardsContainer.innerHTML = '';
 
-    // render report cards dynamically with robust styling and accessibility
-    function renderReports() {
-      if (!reportsGrid) return;
-      reportsGrid.innerHTML = '';
-      reportsData.forEach((report, idx) => {
+      reportsList.forEach((item, idx) => {
         const card = document.createElement('div');
+        // ক্লাস: বেস কার্ড + যদি খালি হয় তবে empty-card স্টাইল
         card.className = 'report-card';
-        // make whole card clickable but preserve link behavior inside
-        const anchor = document.createElement('a');
-        anchor.href = report.link;
-        anchor.target = '_blank';
-        anchor.rel = 'noopener noreferrer';
-        anchor.className = 'report-link';
-        anchor.style.display = 'block';
-        anchor.style.textDecoration = 'none';
-        anchor.style.color = 'inherit';
+        if (item.isEmpty || !item.link) {
+          card.classList.add('empty-card');
+        }
+
+        // লিংক wrapper - যদি লিংক থাকে তাহলে <a> ট্যাগ, না থাকলে div (ক্লিকযোগ্য না)
+        const linkWrapper = document.createElement(item.link && !item.isEmpty ? 'a' : 'div');
+        if (item.link && !item.isEmpty) {
+          linkWrapper.href = item.link;
+          linkWrapper.target = '_blank';
+          linkWrapper.rel = 'noopener noreferrer';
+          linkWrapper.className = 'report-link';
+        } else {
+          linkWrapper.className = 'report-link';
+          // খালি কার্ডের জন্য কোনো রিডাইরেক্ট হবে না, স্টাইলিং একই রাখা
+          linkWrapper.style.cursor = 'default';
+        }
+
+        // নামের অংশ
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'report-name';
+        nameSpan.innerText = item.name;
         
-        // inner html structure
-        anchor.innerHTML = `
-          <div class="card-icon">
-            <i class="${report.icon}" style="color: ${report.color || '#aad4e0'}"></i>
-          </div>
-          <h3>${escapeHtml(report.name)}</h3>
-          <div class="card-footer">
-            <span>Open report</span>
-            <i class="fas fa-arrow-right"></i>
-          </div>
-        `;
-        card.appendChild(anchor);
-        reportsGrid.appendChild(card);
+        // ডান পাশে তীর চিহ্ন (খালি কার্ডেও থাকবে, কিন্তু ক্লিকযোগ্য নয়)
+        const arrowSpan = document.createElement('span');
+        arrowSpan.className = 'arrow-symbol';
+        arrowSpan.innerText = '→';
+        
+        linkWrapper.appendChild(nameSpan);
+        linkWrapper.appendChild(arrowSpan);
+        card.appendChild(linkWrapper);
+        
+        // যদি খালি কার্ড হয় এবং লিংক না থাকে, তবুও সাদাসিধে UI, টুলটিপ বা মেসেজ লাগবে না, শুধু ভিজুয়াল আলাদা
+        if (item.isEmpty || !item.link) {
+          // খালি কার্ডগুলোর জন্য অ্যারো হালকা করে দেওয়া আছে, ক্লিক করলে কিছু হয় না
+          // ইউজার বুঝতে পারে পরবর্তীতে লিংক এড হবে
+          linkWrapper.addEventListener('click', (e) => {
+            if (!item.link || item.isEmpty) {
+              e.preventDefault();
+              // (অপশনাল) ছোট নোটিফিকেশন? আমরা চুপ থাকি, কারণ সিম্পল ইউআই চাওয়া হয়েছে
+              // তবে ইচ্ছে করলে হালকা টোস্ট দেওয়া যায়, কিন্তু না রাখলেই ভালো
+            }
+          });
+        }
+        
+        cardsContainer.appendChild(card);
       });
     }
 
-    // simple XSS prevention helper (though names are safe)
-    function escapeHtml(str) {
-      return str.replace(/[&<>]/g, function(m) {
-        if (m === '&') return '&amp;';
-        if (m === '<') return '&lt;';
-        if (m === '>') return '&gt;';
-        return m;
-      }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
-        return c;
-      });
+    // লগইন সফল হলে ড্যাশবোর্ড দেখানো
+    function showDashboard() {
+      loginOverlay.style.display = 'none';
+      dashboardDiv.classList.remove('hidden');
+      dashboardDiv.classList.add('visible');
+      // কার্ড রেন্ডার
+      renderAllCards();
     }
 
-    // login handler
+    // লগইন চেক
     function attemptLogin() {
       const enteredPin = pinInput.value.trim();
       const correctPin = getTodayPIN();
       
       if (enteredPin === correctPin) {
-        // success: hide login overlay, show dashboard with smooth transition
-        loginOverlay.style.display = 'none';
-        dashboardDiv.classList.remove('hidden');
-        // small delay to allow css transition for dashboard entrance
-        setTimeout(() => {
-          dashboardDiv.classList.add('visible');
-        }, 20);
-        // clear any previous error & input
-        if (errorContainer) errorContainer.innerHTML = '';
+        // সাফল্য
+        errorDiv.innerHTML = '';
+        showDashboard();
         pinInput.value = '';
-        // update date badge
-        updateDateBadge();
-        // render all report cards
-        renderReports();
       } else {
-        // error handling with shake effect?
-        if (errorContainer) {
-          errorContainer.innerHTML = '<div class="error-msg"><i class="fas fa-exclamation-triangle"></i> Invalid PIN · Access denied</div>';
-        }
+        errorDiv.innerHTML = '<div class="error-msg">❌ ভুল পিন। আবার চেষ্টা করুন</div>';
         pinInput.value = '';
         pinInput.focus();
-        // optional shake effect on login card
-        const card = document.querySelector('.login-card');
-        if (card) {
-          card.style.transform = 'translateX(4px)';
-          setTimeout(() => { if(card) card.style.transform = ''; }, 100);
-          setTimeout(() => { if(card) card.style.transform = ''; }, 200);
+        // ছোট এনিমেশন (শেক ইফেক্ট)
+        const loginCard = document.querySelector('.login-card');
+        if (loginCard) {
+          loginCard.style.transform = 'translateX(3px)';
+          setTimeout(() => { if(loginCard) loginCard.style.transform = ''; }, 100);
         }
       }
     }
 
-    // logout: fully reset to login screen (location.reload style but without full reload flash? we do simple reset)
+    // লগআউট (পূর্ণ রিসেট)
     function logoutAndReset() {
-      // reset dashboard hidden and clear visible flag
+      // ড্যাশবোর্ড লুকান
       dashboardDiv.classList.remove('visible');
       dashboardDiv.classList.add('hidden');
-      // reset login overlay display style and clear fields
+      // লগইন ওভারলেই দেখান
       loginOverlay.style.display = 'flex';
       if (pinInput) pinInput.value = '';
-      if (errorContainer) errorContainer.innerHTML = '';
-      // clear any leftover grid content to avoid showing stale data
-      if (reportsGrid) reportsGrid.innerHTML = '';
-      // focus on pin
-      setTimeout(() => {
-        if (pinInput) pinInput.focus();
-      }, 50);
+      if (errorDiv) errorDiv.innerHTML = '';
+      // কার্ড কন্টেইনার খালি করা (যাতে পুনরায় ঢুকলে তাজা থাকে)
+      if (cardsContainer) cardsContainer.innerHTML = '';
+      // ফোকাস
+      setTimeout(() => pinInput && pinInput.focus(), 30);
     }
 
-    // event listeners
-    if (loginBtn) {
-      loginBtn.addEventListener('click', attemptLogin);
-    }
-    // allow Enter key on password field
+    // ইভেন্ট লিসেনার
+    if (loginBtn) loginBtn.addEventListener('click', attemptLogin);
     if (pinInput) {
-      pinInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          attemptLogin();
-        }
+      pinInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') attemptLogin();
       });
     }
+    if (logoutBtn) logoutBtn.addEventListener('click', logoutAndReset);
 
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', logoutAndReset);
-    }
-
-    // preload any style / also make sure PIN validation is consistent with today's date.
-    // For dev/testing: optionally display demo hint? Not needed. But we include console log for security.
-    console.log("Secure Portal: PIN uses dynamic DDMMYY pattern.");
-    
-    // Edge: if someone manually inspects, but login overlay must cover before access.
-    // Also protect against back/forward cache: optional reset on pageshow? simple but robust.
-    window.addEventListener('pageshow', function(event) {
-      // if page is restored from bfcache and dashboard visible without login? Ensure overlay consistency
+    // পেজ ক্যাশে/ব্যাক বাটন রিলেটেড: অসঙ্গতি দেখা দিলে লগইন অবস্থায় রিসেট
+    window.addEventListener('pageshow', (event) => {
+      // যদি ড্যাশবোর্ড ভিজিবল কিন্তু ওভারলেও হাইডেন না থাকে (বিরল কেস)
       if (loginOverlay && dashboardDiv) {
-        if (loginOverlay.style.display === 'none' && dashboardDiv.classList.contains('hidden')) {
-          // Inconsistent state: force logout reset
+        if (loginOverlay.style.display !== 'none' && dashboardDiv.classList.contains('visible')) {
           logoutAndReset();
-        } else if (loginOverlay.style.display !== 'none' && !dashboardDiv.classList.contains('hidden')) {
-          // another weird scenario
+        } else if (loginOverlay.style.display === 'none' && dashboardDiv.classList.contains('hidden')) {
+          // অদ্ভুত অবস্থা: ওভারলেও নেই, ড্যাশবোর্ডও নেই। রিলোডের মতো রিসেট
           logoutAndReset();
         }
       }
     });
     
-    // Extra: if someone tries to access main content via devtools, they still need correct PIN.
-    // The data is loaded only after login (renderReports). Good.
-    
-    // Display current PIN hint? no, but we can show date info for debugging (not pin).
-    // add a subtle live demo note: not required.
-    // for better UX, if user reloads while logged in, they'll be back at login (since reload resets state).
-    // That's acceptable (logout = reload behavior).
-    // However we also provide proper logout without full reload, but location.reload alternative? no, we simulate reset.
-    // For extra integrity, we also clear any localStorage or session related (none used).
+    // অতিরিক্ত: লিংক যুক্ত করার পর খালি কার্ড গুলো ভবিষ্যতে আপডেট করার জন্য কনসোল হেল্পার নেই, 
+    // তবে ডেভেলপার চাইলে reportsList অ্যারের অবজেক্টের link সম্পাদনা করলেই হবে।
+    // এছাড়াও UI টেক্সট বেসড, ছোট কার্ড, কোনো হেডার নেই, মোবাইল-অপ্টিমাইজড
+
+    // ডিবাগের জন্য পিন ফরম্যাট জানান (নিরাপত্তায় রাখা)
+    console.log("✅ Mahir Enterprise | পিন ফরম্যাট: DDMMYY (আজকের তারিখ অনুযায়ী)");
   })();
 </script>
 </body>
