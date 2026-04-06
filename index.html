@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mahir Enterprise</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #2c5364);
+    color: #fff;
+}
+
+.container {
+    padding: 20px;
+    text-align: center;
+}
+
+.login-box {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(135deg, #141e30, #243b55);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-card {
+    background: #fff;
+    color: #000;
+    padding: 30px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 300px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+}
+
+.login-card input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.login-card button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 15px;
+    background: #2c5364;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.card {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    background: rgba(255,255,255,0.2);
+}
+
+.logout {
+    margin-top: 20px;
+    background: red;
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+}
+
+.hidden { display: none; }
+</style>
+</head>
+
+<body>
+
+<div class="login-box" id="loginBox">
+    <div class="login-card">
+        <h3>Enter PIN</h3>
+        <input type="password" id="pinInput" placeholder="Enter PIN">
+        <button onclick="login()">Login</button>
+        <p id="error" style="color:red;"></p>
+    </div>
+</div>
+
+<div class="container hidden" id="mainContent">
+
+    <div class="cards" id="reportList"></div>
+
+    <button class="logout" onclick="logout()">Logout</button>
+</div>
+
+<script>
+
+// DAILY PIN BASED ON DATE (DDMM)
+function getTodayPIN() {
+    let d = new Date();
+    let day = String(d.getDate()).padStart(2,'0');
+    let month = String(d.getMonth()+1).padStart(2,'0');
+    let year = String(d.getFullYear()).slice(-2);
+    return day + month + year; // example: 060426
+}
+
+function login() {
+    let input = document.getElementById("pinInput").value;
+    if(input === getTodayPIN()) {
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("mainContent").classList.remove("hidden");
+    } else {
+        document.getElementById("error").innerText = "Wrong PIN";
+    }
+}
+
+function logout() {
+    location.reload();
+}
+
+let reports = [
+    {name: "Agent Performance Report", link: "https://docs.google.com/spreadsheets/d/1k-nS7ykk1OC25EJrEanMPoX7x5cZtRe_/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true"},
+    {name: "Top 100 Agents", link: "https://docs.google.com/spreadsheets/d/10l7L6AemBqEsF2rEPAbUecDOy3Xsm3W1/edit?usp=sharing&ouid=102438858847225639241&rtpof=true&sd=true"},
+    {name: "Expense Report", link: "https://docs.google.com"},
+    {name: "Sales Report", link: "https://docs.google.com"},
+    {name: "Performance Report", link: "https://docs.google.com"}
+];
+
+let reportContainer = document.getElementById("reportList");
+
+reports.forEach(r => {
+    let div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `<a href="${r.link}" target="_blank" style="color:white;text-decoration:none;">${r.name}</a>`;
+    reportContainer.appendChild(div);
+});
+
+</script>
+
+</body>
+</html>
